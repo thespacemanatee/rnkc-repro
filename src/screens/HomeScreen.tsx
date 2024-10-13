@@ -1,6 +1,8 @@
+import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import {
   Button,
+  ScrollView,
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
@@ -16,12 +18,20 @@ export default function OverKeyboardViewExample() {
   const { logout } = useAuth();
 
   return (
-    <View>
+    <ScrollView keyboardShouldPersistTaps="handled">
       <TextInput style={styles.input} testID="over_keyboard_view.input" />
       <Button
         testID="over_keyboard_view.show"
         title="Show"
         onPress={() => setShow(true)}
+      />
+      <Button
+        title="Show web browser"
+        onPress={() =>
+          WebBrowser.openBrowserAsync(
+            "https://kirillzyusko.github.io/react-native-keyboard-controller/docs/installation#troubleshooting"
+          )
+        }
       />
       <OverKeyboardView visible={isShow}>
         <GestureHandlerRootView style={styles.fullScreen}>
@@ -45,7 +55,7 @@ export default function OverKeyboardViewExample() {
           </TouchableWithoutFeedback>
         </GestureHandlerRootView>
       </OverKeyboardView>
-    </View>
+    </ScrollView>
   );
 }
 

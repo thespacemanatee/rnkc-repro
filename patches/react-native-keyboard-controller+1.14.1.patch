@@ -1,0 +1,55 @@
+diff --git a/node_modules/react-native-keyboard-controller/ios/extensions/UIWindow.swift b/node_modules/react-native-keyboard-controller/ios/extensions/UIWindow.swift
+index c73fc1b..8a8a05c 100644
+--- a/node_modules/react-native-keyboard-controller/ios/extensions/UIWindow.swift
++++ b/node_modules/react-native-keyboard-controller/ios/extensions/UIWindow.swift
+@@ -38,7 +38,30 @@ public extension UIWindow {
+ 
+     func getTopWindow() -> UIWindow? {
+       // Return the keyboard window if it's available, otherwise return the last window
+-      return keyboardWindow ?? UIApplication.shared.activeWindow
++      print("KeyboardWindowObserver: Getting top window")
++      
++      func logWindowInfo(_ window: UIWindow?, prefix: String) {
++        guard let window = window else {
++          print("\(prefix) Window is nil")
++          return
++        }
++        print("\(prefix) Window details:")
++        print("  - Class: \(type(of: window))")
++        print("  - Frame: \(window.frame)")
++        print("  - Is Key Window: \(window.isKeyWindow)")
++        print("  - Is Hidden: \(window.isHidden)")
++      }
++      
++      logWindowInfo(keyboardWindow, prefix: "Keyboard")
++      logWindowInfo(UIApplication.shared.activeWindow, prefix: "Active")
++      
++      if let keyboardWindow = keyboardWindow {
++        print("KeyboardWindowObserver: Returning keyboard window")
++        return keyboardWindow
++      } else {
++        print("KeyboardWindowObserver: Returning active window")
++        return UIApplication.shared.activeWindow
++      }
+     }
+   }
+ 
+diff --git a/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm b/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
+index 57612c1..c7f3623 100644
+--- a/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
++++ b/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
+@@ -106,6 +106,14 @@ RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
+ }
+ #endif
+ 
++// MARK: lifecycle methods
++- (void)didMoveToSuperview
++{
++  if (self.superview == nil) {
++    [self hide];
++  }
++}
++
+ // MARK: touch handling
+ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+ {
